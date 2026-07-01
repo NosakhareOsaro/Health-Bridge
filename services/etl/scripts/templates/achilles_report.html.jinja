@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HealthBridge OMOP CDM Data Characterization Report</title>
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; margin: 2rem; color: #1a1a1a; background: #fafafa; }
+  h1 { margin-bottom: 0; }
+  .subtitle { color: #666; margin-top: 0.25rem; }
+  .card-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0; }
+  .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.5rem; min-width: 140px; }
+  .card .value { font-size: 1.8rem; font-weight: 700; }
+  .card .label { color: #666; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0 2rem; background: white; }
+  th, td { border: 1px solid #e0e0e0; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.9rem; }
+  th { background: #f0f2f5; }
+  section { margin-bottom: 2.5rem; }
+  .pyramid-row { display: flex; align-items: center; margin: 2px 0; font-size: 0.8rem; }
+  .pyramid-label { width: 60px; text-align: center; color: #444; }
+  .pyramid-bar-wrap { width: 300px; display: flex; }
+  .pyramid-bar-male { background: #4c78a8; height: 16px; margin-left: auto; }
+  .pyramid-bar-female { background: #e45756; height: 16px; }
+  .legend { font-size: 0.85rem; color: #444; margin-bottom: 0.5rem; }
+  .legend span { display: inline-block; width: 12px; height: 12px; margin-right: 4px; vertical-align: middle; }
+  .disclaimer { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 1rem; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<h1>HealthBridge OMOP CDM Data Characterization Report</h1>
+<p class="subtitle">Generated {{ generated_at }} &middot; Achilles-style summary (lightweight, project-native substitute for the OHDSI Achilles R package)</p>
+
+<div class="disclaimer">
+  <strong>Synthetic data only.</strong> This report characterizes Synthea-generated synthetic
+  patients loaded through the HealthBridge ETL pipeline. It contains no real patient data and
+  is not a clinical or research artifact.
+</div>
+
+<section>
+  <h2>Population summary</h2>
+  <div class="card-row">
+    {% for label, value in summary_cards %}
+    <div class="card">
+      <div class="value">{{ value }}</div>
+      <div class="label">{{ label }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2>Age / sex pyramid</h2>
+  <div class="legend">
+    <span style="background:#4c78a8;"></span> Male
+    &nbsp;&nbsp;
+    <span style="background:#e45756;"></span> Female
+  </div>
+  {% for row in pyramid_rows %}
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:{{ row.male_pct }}%"></div>
+    </div>
+    <div class="pyramid-label">{{ row.age_band }}</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:{{ row.female_pct }}%"></div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<section>
+  <h2>Top conditions by prevalence</h2>
+  {{ top_conditions_table }}
+</section>
+
+<section>
+  <h2>Visit type distribution</h2>
+  {{ visit_type_table }}
+</section>
+
+<section>
+  <h2>Length of stay by visit type (days)</h2>
+  {{ los_table }}
+</section>
+
+<section>
+  <h2>Mortality</h2>
+  {{ mortality_table }}
+</section>
+
+</body>
+</html>

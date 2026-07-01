@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HealthBridge OMOP CDM Data Characterization Report</title>
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; margin: 2rem; color: #1a1a1a; background: #fafafa; }
+  h1 { margin-bottom: 0; }
+  .subtitle { color: #666; margin-top: 0.25rem; }
+  .card-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0; }
+  .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.5rem; min-width: 140px; }
+  .card .value { font-size: 1.8rem; font-weight: 700; }
+  .card .label { color: #666; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0 2rem; background: white; }
+  th, td { border: 1px solid #e0e0e0; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.9rem; }
+  th { background: #f0f2f5; }
+  section { margin-bottom: 2.5rem; }
+  .pyramid-row { display: flex; align-items: center; margin: 2px 0; font-size: 0.8rem; }
+  .pyramid-label { width: 60px; text-align: center; color: #444; }
+  .pyramid-bar-wrap { width: 300px; display: flex; }
+  .pyramid-bar-male { background: #4c78a8; height: 16px; margin-left: auto; }
+  .pyramid-bar-female { background: #e45756; height: 16px; }
+  .legend { font-size: 0.85rem; color: #444; margin-bottom: 0.5rem; }
+  .legend span { display: inline-block; width: 12px; height: 12px; margin-right: 4px; vertical-align: middle; }
+  .disclaimer { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 1rem; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<h1>HealthBridge OMOP CDM Data Characterization Report</h1>
+<p class="subtitle">Generated 2026-07-01 13:33 &middot; Achilles-style summary (lightweight, project-native substitute for the OHDSI Achilles R package)</p>
+
+<div class="disclaimer">
+  <strong>Synthetic data only.</strong> This report characterizes Synthea-generated synthetic
+  patients loaded through the HealthBridge ETL pipeline. It contains no real patient data and
+  is not a clinical or research artifact.
+</div>
+
+<section>
+  <h2>Population summary</h2>
+  <div class="card-row">
+    
+    <div class="card">
+      <div class="value">17</div>
+      <div class="label">Persons</div>
+    </div>
+    
+    <div class="card">
+      <div class="value">861</div>
+      <div class="label">Visits</div>
+    </div>
+    
+    <div class="card">
+      <div class="value">654</div>
+      <div class="label">Conditions</div>
+    </div>
+    
+    <div class="card">
+      <div class="value">2133</div>
+      <div class="label">Measurements</div>
+    </div>
+    
+    <div class="card">
+      <div class="value">3633</div>
+      <div class="label">Observations</div>
+    </div>
+    
+    <div class="card">
+      <div class="value">2</div>
+      <div class="label">Deaths</div>
+    </div>
+    
+  </div>
+</section>
+
+<section>
+  <h2>Age / sex pyramid</h2>
+  <div class="legend">
+    <span style="background:#4c78a8;"></span> Male
+    &nbsp;&nbsp;
+    <span style="background:#e45756;"></span> Female
+  </div>
+  
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:0.0%"></div>
+    </div>
+    <div class="pyramid-label">0-9</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:25.0%"></div>
+    </div>
+  </div>
+  
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:50.0%"></div>
+    </div>
+    <div class="pyramid-label">10-19</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:0.0%"></div>
+    </div>
+  </div>
+  
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:25.0%"></div>
+    </div>
+    <div class="pyramid-label">20-29</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:25.0%"></div>
+    </div>
+  </div>
+  
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:50.0%"></div>
+    </div>
+    <div class="pyramid-label">30-39</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:25.0%"></div>
+    </div>
+  </div>
+  
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:25.0%"></div>
+    </div>
+    <div class="pyramid-label">40-49</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:0.0%"></div>
+    </div>
+  </div>
+  
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:0.0%"></div>
+    </div>
+    <div class="pyramid-label">50-59</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:25.0%"></div>
+    </div>
+  </div>
+  
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:50.0%"></div>
+    </div>
+    <div class="pyramid-label">60-69</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:100.0%"></div>
+    </div>
+  </div>
+  
+  <div class="pyramid-row">
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-male" style="width:25.0%"></div>
+    </div>
+    <div class="pyramid-label">80-89</div>
+    <div class="pyramid-bar-wrap">
+      <div class="pyramid-bar-female" style="width:0.0%"></div>
+    </div>
+  </div>
+  
+</section>
+
+<section>
+  <h2>Top conditions by prevalence</h2>
+  <table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>concept_name</th>
+      <th>occurrences</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>No matching concept</td>
+      <td>543</td>
+    </tr>
+    <tr>
+      <td>Gingivitis (disorder)</td>
+      <td>53</td>
+    </tr>
+    <tr>
+      <td>Viral sinusitis (disorder)</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Acute bronchitis (disorder)</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>Body mass index 30+ - obesity (finding)</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>Acute viral pharyngitis (disorder)</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>Anemia (disorder)</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>Prediabetes (finding)</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<section>
+  <h2>Visit type distribution</h2>
+  <table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>concept_name</th>
+      <th>visits</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Emergency Room Visit</td>
+      <td>33</td>
+    </tr>
+    <tr>
+      <td>Inpatient Visit</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>No matching concept</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>Outpatient Visit</td>
+      <td>802</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<section>
+  <h2>Length of stay by visit type (days)</h2>
+  <table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>concept_name</th>
+      <th>avg_los_days</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Emergency Room Visit</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <td>Inpatient Visit</td>
+      <td>9.71</td>
+    </tr>
+    <tr>
+      <td>No matching concept</td>
+      <td>7.56</td>
+    </tr>
+    <tr>
+      <td>Outpatient Visit</td>
+      <td>0.01</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<section>
+  <h2>Mortality</h2>
+  <table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>total_persons</th>
+      <th>deaths</th>
+      <th>mortality_rate_pct</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>17</td>
+      <td>2</td>
+      <td>11.76</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+</body>
+</html>

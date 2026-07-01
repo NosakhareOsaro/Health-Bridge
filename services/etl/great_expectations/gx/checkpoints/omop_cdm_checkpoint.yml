@@ -1,0 +1,48 @@
+name: omop_cdm_checkpoint
+config_version: 1.0
+template_name:
+module_name: great_expectations.checkpoint
+class_name: Checkpoint
+run_name_template:
+expectation_suite_name:
+batch_request: {}
+action_list:
+  - name: store_validation_result
+    action:
+      class_name: StoreValidationResultAction
+  - name: store_evaluation_params
+    action:
+      class_name: StoreEvaluationParametersAction
+  - name: update_data_docs
+    action:
+      class_name: UpdateDataDocsAction
+evaluation_parameters: {}
+runtime_configuration: {}
+validations:
+  - batch_request:
+      datasource_name: omop_cdm
+      data_asset_name: person
+      options: {}
+      batch_slice:
+    expectation_suite_name: person_suite
+  - batch_request:
+      datasource_name: omop_cdm
+      data_asset_name: visit_occurrence
+      options: {}
+      batch_slice:
+    expectation_suite_name: visit_occurrence_suite
+  - batch_request:
+      datasource_name: omop_cdm
+      data_asset_name: condition_occurrence
+      options: {}
+      batch_slice:
+    expectation_suite_name: condition_occurrence_suite
+  - batch_request:
+      datasource_name: omop_cdm
+      data_asset_name: measurement
+      options: {}
+      batch_slice:
+    expectation_suite_name: measurement_suite
+profilers: []
+ge_cloud_id:
+expectation_suite_ge_cloud_id:
