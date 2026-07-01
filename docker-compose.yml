@@ -1,0 +1,124 @@
+
+services:
+  # ---------------------------------------------------------------------
+  # Core clinical data store used by HAPI FHIR
+  # ---------------------------------------------------------------------
+  fhir-db:
+    image: postgres:16-alpine
+    container_name: healthbridge-fhir-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hapi
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: hapi
+    volumes:
+      - fhir_db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hapi -d hapi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------
+  # HAPI FHIR R4 reference server
+  # ---------------------------------------------------------------------
+  hapi-fhir:
+    image: hapiproject/hapi:v7.2.0
+    container_name: healthbridge-hapi-fhir
+    restart: unless-stopped
+    depends_on:
+      fhir-db:
+        condition: service_healthy
+    environment:
+      spring.datasource.url: jdbc:postgresql://fhir-db:5432/hapi
+      spring.datasource.username: hapi
+      spring.datasource.password: hapi
+      spring.datasource.driverClassName: org.postgresql.Driver
+      spring.jpa.properties.hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+      hapi.fhir.fhir_version: R4
+      hapi.fhir.cors.allowed_origin: "*"
+    ports:
+      - "8080:8080"
+    volumes:
+      - hapi_fhir_data:/data/hapi
+
+  # ---------------------------------------------------------------------
+  # OMOP CDM warehouse used by the ETL / dbt project
+  # ---------------------------------------------------------------------
+  omop-db:
+    image: postgres:16-alpine
+    container_name: healthbridge-omop-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: omop
+      POSTGRES_USER: omop
+      POSTGRES_PASSWORD: omop
+    volumes:
+      - omop_db_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U omop -d omop"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------
+  # Redis cache used by the FastAPI SMART-on-FHIR gateway for
+  # rate-limit counters and search-result caching
+  # ---------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: healthbridge-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------
+  # FastAPI SMART-on-FHIR gateway in front of HAPI FHIR
+  # ---------------------------------------------------------------------
+  fhir-api:
+    build:
+      context: ./services/fhir-api
+    container_name: healthbridge-fhir-api
+    restart: unless-stopped
+    depends_on:
+      hapi-fhir:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    environment:
+      FHIR_UPSTREAM_URL: http://hapi-fhir:8080/fhir
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-secret-change-me}
+      RATE_LIMIT_PER_MINUTE: "60"
+    ports:
+      - "8000:8000"
+
+  # ---------------------------------------------------------------------
+  # Streamlit analytics: population health + A&E forecasting + equity
+  # ---------------------------------------------------------------------
+  analytics-dashboard:
+    build:
+      context: ./services/analytics
+    container_name: healthbridge-analytics
+    restart: unless-stopped
+    depends_on:
+      omop-db:
+        condition: service_healthy
+    environment:
+      OMOP_DB_URL: postgresql://omop:omop@omop-db:5432/omop
+    ports:
+      - "8501:8501"
+
+volumes:
+  fhir_db_data:
+  hapi_fhir_data:
+  omop_db_data:

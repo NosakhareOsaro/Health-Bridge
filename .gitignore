@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+*.pyc
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# dbt
+services/etl/dbt_omop/target/
+services/etl/dbt_omop/dbt_packages/
+services/etl/dbt_omop/logs/
+
+# Great Expectations
+services/etl/great_expectations/uncommitted/
+
+# Synthea output (large synthetic data, regenerate locally)
+services/etl/synthea/output/
+services/etl/synthea/synthea-with-dependencies.jar
+
+# OMOP vocabulary downloads (user-provided, see docs)
+services/etl/vocab_full/
+
+# Data / DB
+*.duckdb
+*.sqlite3
+pgdata/
+services/etl/data/*.csv
+!services/etl/data/sample/*.csv
+
+# Node (docs tooling, if any)
+node_modules/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Docker
+docker-compose.override.yml
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
