@@ -7,6 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 COPY mapping ./mapping
+COPY forecasting ./forecasting
+COPY equity ./equity
 
 EXPOSE 8501
 

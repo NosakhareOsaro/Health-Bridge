@@ -74,15 +74,43 @@ python3 mapping/icd10_to_snomed.py --all   # dump the full seeded crosswalk
 Only the small seeded vocabulary subset from `services/etl/dbt_omop/seeds/` is loaded by
 default -- see that service's README for how to load the full OHDSI Athena vocabulary.
 
+## A&E demand forecasting (Prophet)
+
+`app/pages/2_AE_Forecasting.py`, backed by `forecasting/`:
+
+- `generate_ae_attendance_data.py` fabricates a **synthetic** daily A&E attendance series
+  (weekly + winter-surge seasonality, a slow upward trend, noise, and a few outbreak-style
+  spike days) -- there is no real attendance data anywhere in this project.
+- `train_prophet_model.py` fits a `Prophet` model, evaluates accuracy on a holdout window
+  (typically ~4% MAPE on this synthetic series), and forecasts forward.
+- The dashboard page runs this live (cached with `st.cache_resource`/`st.cache_data` so the
+  page stays responsive), plotting actual history vs. forecast with a shaded confidence
+  interval and a "today" marker -- the "real-time forecasted vs. actual" view called for in
+  the brief.
+
+## Health equity view (GIS choropleth)
+
+`app/pages/3_Health_Equity.py`, backed by `equity/generate_equity_data.py`:
+
+- Fabricates a 5x5 grid of **synthetic** square "service area" polygons around Boston, MA
+  (consistent with where this project's Synthea population is generated) using `shapely`,
+  assigns each a synthetic deprivation index, chronic-disease prevalence, life expectancy,
+  and population via `geopandas`.
+- Renders a choropleth with `folium.Choropleth` (selectable metric) plus hover tooltips.
+- There are no real ZIP/ZCTA boundary files or demographic data behind this -- downloading
+  the real US Census TIGER/Line shapefiles was judged out of scope for a portfolio ETL, and
+  is called out explicitly in the page itself, not just in this README.
+
 ## Tests
 
 ```bash
 pytest -v
 ```
 
-These are integration tests against a live OMOP CDM Postgres (they `pytest.skip` if it
-isn't reachable, rather than mocking the database), since the thing actually worth testing
-here is the SQL against the real OMOP schema.
+`test_measures.py` and `test_icd10_to_snomed.py` are integration tests against a live OMOP
+CDM Postgres (they `pytest.skip` if it isn't reachable, rather than mocking the database).
+`test_forecasting.py` and `test_equity.py` run the real Prophet/geopandas pipelines against
+generated synthetic data and need no database.
 
 ## Known simplifications (portfolio scope)
 
@@ -92,3 +120,6 @@ here is the SQL against the real OMOP schema.
   numbers.
 - The readmission measure doesn't exclude planned admissions or transfers, unlike the full
   CMS/NHS readmission methodologies.
+- The A&E attendance series and health-equity regions/metrics are both entirely synthetic
+  and clearly labeled as such in the UI -- swap in a real time series or real GIS boundary
+  files (e.g. ONS/Census shapefiles) to make either page reflect a real population.
