@@ -21,9 +21,10 @@ htmlcov/
 services/etl/dbt_omop/target/
 services/etl/dbt_omop/dbt_packages/
 services/etl/dbt_omop/logs/
+services/etl/dbt_omop/.user.yml
 
 # Great Expectations
-services/etl/great_expectations/uncommitted/
+services/etl/great_expectations/gx/uncommitted/
 
 # Synthea output (large synthetic data, regenerate locally)
 services/etl/synthea/output/
