@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  fhir-api:
+    name: fhir-api (lint + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/fhir-api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: services/fhir-api/requirements-dev.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Test (pytest, fully mocked -- no external services needed)
+        run: pytest -v
+
+  etl-and-analytics:
+    name: etl + analytics (lint + build OMOP CDM + test)
+    runs-on: ubuntu-latest
+    services:
+      omop-db:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: omop
+          POSTGRES_USER: omop
+          POSTGRES_PASSWORD: omop
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U omop -d omop"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      OMOP_DB_ASYNC_URL: postgresql+asyncpg://omop:omop@localhost:5434/omop
+      OMOP_DB_SYNC_URL: postgresql+psycopg2://omop:omop@localhost:5434/omop
+      OMOP_DB_URL: postgresql://omop:omop@localhost:5434/omop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Cache Synthea jar
+        uses: actions/cache@v4
+        with:
+          path: services/etl/synthea/synthea-with-dependencies.jar
+          key: synthea-jar-master-branch-latest
+
+      - name: Install etl dependencies
+        working-directory: services/etl
+        run: |
+          pip install -r requirements-dev.txt
+
+      - name: Lint etl (ruff)
+        working-directory: services/etl
+        run: ruff check .
+
+      - name: Unit test etl (pure FHIR-parsing logic, no database needed)
+        working-directory: services/etl
+        run: pytest -v tests/test_fhir_parsing.py
+
+      - name: Generate a small synthetic population (Synthea)
+        working-directory: services/etl
+        run: ./scripts/generate_synthea.sh 10 Massachusetts
+
+      - name: Apply staging schema migrations (Alembic)
+        working-directory: services/etl
+        run: alembic upgrade head
+
+      - name: Load FHIR bundles into staging
+        working-directory: services/etl
+        run: python3 scripts/load_fhir_to_staging.py --input-dir synthea/output/fhir
+
+      - name: Build OMOP CDM (dbt seed + run + test)
+        working-directory: services/etl/dbt_omop
+        env:
+          DBT_PROFILES_DIR: .
+          OMOP_DB_HOST: localhost
+          OMOP_DB_PORT: "5434"
+          OMOP_DB_USER: omop
+          OMOP_DB_PASSWORD: omop
+          OMOP_DB_NAME: omop
+        run: dbt build
+
+      - name: Great Expectations data-quality checks
+        working-directory: services/etl
+        run: python3 scripts/run_data_quality_checks.py
+
+      - name: Install analytics dependencies
+        working-directory: services/analytics
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint analytics (ruff)
+        working-directory: services/analytics
+        run: ruff check .
+
+      - name: Test analytics (measures/mapping against the CDM just built; forecasting/equity are self-contained)
+        working-directory: services/analytics
+        run: pytest -v
+
+  docker-build:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml
+        run: docker compose config --quiet
+
+      - name: Build fhir-api image
+        run: docker build -t healthbridge-fhir-api:ci ./services/fhir-api
+
+      - name: Build analytics image
+        run: docker build -t healthbridge-analytics:ci ./services/analytics
