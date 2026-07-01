@@ -1,0 +1,127 @@
+version: 2
+
+models:
+  - name: person
+    description: OMOP CDM v5.4 PERSON, one row per unique patient.
+    columns:
+      - name: person_id
+        tests: [unique, not_null]
+      - name: gender_concept_id
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [8507, 8532, 8551]
+      - name: race_concept_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('concept')
+                field: concept_id
+      - name: ethnicity_concept_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('concept')
+                field: concept_id
+
+  - name: observation_period
+    description: OMOP CDM v5.4 OBSERVATION_PERIOD, inferred from encounter history.
+    columns:
+      - name: observation_period_id
+        tests: [unique, not_null]
+      - name: person_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+
+  - name: visit_occurrence
+    description: OMOP CDM v5.4 VISIT_OCCURRENCE, one row per FHIR Encounter.
+    columns:
+      - name: visit_occurrence_id
+        tests: [unique, not_null]
+      - name: person_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: visit_concept_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('concept')
+                field: concept_id
+
+  - name: condition_occurrence
+    description: >
+      OMOP CDM v5.4 CONDITION_OCCURRENCE, mapped from FHIR Condition via the
+      seeded ICD-10/SNOMED -> OMOP concept vocabulary subset.
+    columns:
+      - name: condition_occurrence_id
+        tests: [unique, not_null]
+      - name: person_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: condition_concept_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('concept')
+                field: concept_id
+      - name: condition_start_date
+        tests: [not_null]
+
+  - name: measurement
+    description: OMOP CDM v5.4 MEASUREMENT, numeric-valued vitals/labs from FHIR Observation.
+    columns:
+      - name: measurement_id
+        tests: [unique, not_null]
+      - name: person_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: value_as_number
+        tests: [not_null]
+
+  - name: observation
+    description: OMOP CDM v5.4 OBSERVATION, non-numeric findings from FHIR Observation.
+    columns:
+      - name: observation_id
+        tests: [unique, not_null]
+      - name: person_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+
+  - name: death
+    description: OMOP CDM v5.4 DEATH, one row per deceased person.
+    columns:
+      - name: person_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('person')
+                field: person_id
+      - name: death_date
+        tests: [not_null]

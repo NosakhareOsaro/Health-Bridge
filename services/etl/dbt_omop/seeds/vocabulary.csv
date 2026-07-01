@@ -1,0 +1,9 @@
+vocabulary_id,vocabulary_name,vocabulary_reference
+SNOMED,SNOMED Clinical Terms,http://snomed.info/sct
+ICD10CM,ICD-10-CM,https://www.cdc.gov/nchs/icd/icd10cm.htm
+LOINC,Logical Observation Identifiers Names and Codes,http://loinc.org
+RxNorm,RxNorm,https://www.nlm.nih.gov/research/umls/rxnorm
+Gender,OMOP Gender,OMOP generated
+Race,Race and Ethnicity Code Set (OMB standard),OMOP generated
+Ethnicity,OMOP Ethnicity,OMOP generated
+None,No matching concept,OMOP generated

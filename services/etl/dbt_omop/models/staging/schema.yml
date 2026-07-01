@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: stg_patients
+    columns:
+      - name: person_id
+        tests: [unique, not_null]
+      - name: person_source_value
+        tests: [unique, not_null]
+
+  - name: stg_encounters
+    columns:
+      - name: visit_occurrence_id
+        tests: [unique, not_null]
+      - name: person_id
+        tests: [not_null]
+
+  - name: stg_conditions
+    columns:
+      - name: condition_occurrence_id
+        tests: [unique, not_null]
+      - name: person_id
+        tests: [not_null]
+
+  - name: stg_observations
+    columns:
+      - name: observation_row_id
+        tests: [unique, not_null]
+      - name: person_id
+        tests: [not_null]

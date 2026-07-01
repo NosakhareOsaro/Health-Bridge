@@ -1,0 +1,12 @@
+healthbridge_omop:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('OMOP_DB_HOST', 'localhost') }}"
+      port: "{{ env_var('OMOP_DB_PORT', '5434') | as_number }}"
+      user: "{{ env_var('OMOP_DB_USER', 'omop') }}"
+      password: "{{ env_var('OMOP_DB_PASSWORD', 'omop') }}"
+      dbname: "{{ env_var('OMOP_DB_NAME', 'omop') }}"
+      schema: cdm
+      threads: 4

@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: staging
+    schema: staging
+    description: >
+      Flattened FHIR extract landed by scripts/load_fhir_to_staging.py.
+      Schema is version-controlled with Alembic, not dbt.
+    tables:
+      - name: patients
+        columns:
+          - name: fhir_id
+            tests: [unique, not_null]
+      - name: encounters
+        columns:
+          - name: fhir_id
+            tests: [unique, not_null]
+      - name: conditions
+        columns:
+          - name: fhir_id
+            tests: [unique, not_null]
+      - name: observations
+        columns:
+          - name: fhir_id
+            tests: [unique, not_null]
