@@ -195,6 +195,26 @@ README):**
 - **Synthetic A&E attendance and health-equity data** -- both are clearly labeled as
   fabricated in the dashboard UI itself, not just in documentation.
 
+**Known issues (resolved):** the platform was audited end-to-end against live
+infrastructure (not just read) on 2026-07-18, which surfaced three bugs that had been
+silently failing CI since the initial push -- all three are now fixed and CI is green:
+
+1. `services/fhir-api/requirements-dev.txt` pinned `respx>=0.21,<0.22`, which fails to
+   match routes against an `httpx` client whose `base_url` includes a sub-path (exactly how
+   the upstream FHIR client is configured) -- broke 8/25 gateway tests. Fixed by bumping to
+   `respx>=0.22`.
+2. `services/etl/requirements.txt` pinned `mashumaro==3.22` to work around a Python
+   3.14-only crash in `dbt-core`, but that pin conflicted with `dbt-core`'s own declared
+   dependency range, making `pip install -r requirements.txt` fail unconditionally --
+   including on the Python 3.12 CI uses. This meant dbt build, Great Expectations, and the
+   Postgres-backed analytics tests had never actually run in CI. Fixed by removing the
+   override and letting `dbt-core` resolve its own compatible `mashumaro`.
+3. `load_fhir_to_staging.py` built one unbatched multi-row `INSERT` per resource type per
+   patient; a single Synthea patient with a long medical history produces enough
+   observation rows to exceed Postgres/asyncpg's 32,767 bound-parameter limit, crashing the
+   loader on the CI workflow's own default population size. Fixed by chunking upserts into
+   batches of 500 rows.
+
 **Natural next steps for extending this:**
 
 1. Swap the Streamlit population-health page for a real Power BI Desktop report connected
