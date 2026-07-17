@@ -115,9 +115,9 @@ generated synthetic data and need no database.
 ## Known simplifications (portfolio scope)
 
 - Readmission/incidence rates are computed over whatever population size the ETL loaded
-  (17 patients in the reference run) -- rates will be noisy/sparse at that scale. Generate
-  a larger Synthea population (`./scripts/generate_synthea.sh 500`) for more realistic
-  numbers.
+  (63 patients in the reference run behind the committed Achilles report and dashboard
+  screenshots) -- rates will be noisy/sparse at that scale. Generate a larger Synthea
+  population (`./scripts/generate_synthea.sh 500`) for more realistic numbers.
 - The readmission measure doesn't exclude planned admissions or transfers, unlike the full
   CMS/NHS readmission methodologies.
 - The A&E attendance series and health-equity regions/metrics are both entirely synthetic

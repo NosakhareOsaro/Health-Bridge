@@ -137,7 +137,7 @@ cd services/fhir-api && source .venv/bin/activate && pytest -v
 # ETL (9 tests: pure FHIR-parsing logic, no database needed)
 cd services/etl && source .venv/bin/activate && pytest -v
 
-# Analytics (27 tests: measures/mapping are live-Postgres integration tests that skip if
+# Analytics (18 tests: measures/mapping are live-Postgres integration tests that skip if
 # unreachable; forecasting/equity tests run the real Prophet/geopandas pipelines)
 cd services/analytics && source .venv/bin/activate && pytest -v
 ```
@@ -181,7 +181,7 @@ data instead of real health-system data).
 - Streamlit dashboards computing real SQL-derived measures (incidence, readmission, LOS,
   age/sex pyramid) against that warehouse, a real Prophet forecasting model (holdout
   MAPE ~4% on its synthetic series), and a real geopandas/folium choropleth.
-- 61 automated tests across the three services, all passing; ruff-clean; every Docker
+- 52 automated tests across the three services, all passing; ruff-clean; every Docker
   image builds and the full 6-container stack starts with one `docker compose up`.
 
 **Deliberate, documented substitutions (not hidden -- see the ADRs and each service's
