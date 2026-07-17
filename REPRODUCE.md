@@ -299,6 +299,63 @@ definitions if you want to reproduce the CI checks locally.
 
 ---
 
+## 10. Regenerating the dashboard and API-docs screenshots
+
+The images in `docs/img/` (`population_health.png`, `ae_forecasting.png`,
+`health_equity.png`, `fhir_api_docs.png`) are real screenshots captured from the live
+services, not mockups. They aren't produced by anything in the repo's own
+dependencies -- regenerate them with a throwaway headless-browser venv:
+
+```bash
+python3 -m venv /tmp/shot-venv && source /tmp/shot-venv/bin/activate
+pip install playwright
+python -m playwright install chromium
+```
+
+The three dashboard screenshots were captured with `docker compose up` running and the
+OMOP CDM populated (section 4) from `./scripts/generate_synthea.sh 60 Massachusetts`
+(Synthea targets *living* patients, so a target of 60 yields 63 total records once the
+handful of simulated deaths are included -- that's the population behind the committed
+Achilles report and screenshots). With the stack up, drive the Streamlit app's sidebar
+navigation and screenshot each page:
+
+```python
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    browser = p.chromium.launch()
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    page.goto("http://localhost:8501", wait_until="networkidle")
+    page.wait_for_timeout(3000)
+    # Sidebar labels come from each page filename with the leading "N_" stripped and
+    # underscores turned into spaces -- e.g. 2_AE_Forecasting.py -> "AE Forecasting"
+    # (not "A&E Forecasting", despite the page's on-screen <h1>).
+    for label, filename in [
+        ("Population Health", "population_health.png"),
+        ("AE Forecasting", "ae_forecasting.png"),
+        ("Health Equity", "health_equity.png"),
+    ]:
+        page.get_by_role("link", name=label, exact=True).click()
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(4000)  # let Prophet/folium/altair finish rendering
+        page.screenshot(path=f"docs/img/{filename}", full_page=True)
+    browser.close()
+```
+
+For the FHIR gateway's OpenAPI docs, use a taller fixed viewport and `full_page=False`
+instead -- a full-page capture of Swagger UI would include an unwieldy schema dump below
+the fold:
+
+```python
+page = browser.new_page(viewport={"width": 1440, "height": 1620})
+page.goto("http://localhost:8000/docs", wait_until="networkidle")
+page.wait_for_selector(".swagger-ui")
+page.wait_for_timeout(2000)
+page.screenshot(path="docs/img/fhir_api_docs.png")  # full_page defaults to False
+```
+
+---
+
 ## Known limitations of this reproduction
 
 - Only a small representative ICD-10/SNOMED/LOINC vocabulary subset is seeded by
