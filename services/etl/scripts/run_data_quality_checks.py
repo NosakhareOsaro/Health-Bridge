@@ -16,9 +16,8 @@ import os
 import sys
 from pathlib import Path
 
-from great_expectations.core.batch import BatchRequest
-
 import great_expectations as gx
+from great_expectations.core.batch import BatchRequest
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent / "great_expectations"
 DATASOURCE_NAME = "omop_cdm"
