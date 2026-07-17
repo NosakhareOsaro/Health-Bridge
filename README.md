@@ -87,6 +87,12 @@ The analytics dashboards need the OMOP CDM populated first -- see "Running the E
 Without it, the dashboards will start (and show a friendly message) but have no data to
 show.
 
+The FHIR gateway's OpenAPI docs are auto-generated from the Pydantic v2 resource models and
+FastAPI route definitions -- SMART on FHIR OAuth2 endpoints plus search/create/read for
+Patient, Encounter, Condition, Observation, and MolecularSequence:
+
+![HealthBridge FHIR Gateway OpenAPI docs](docs/img/fhir_api_docs.png)
+
 ### Running without Docker
 
 Each service has its own `requirements.txt`/`requirements-dev.txt` and README with venv
