@@ -181,13 +181,21 @@ def parse_observations(resource: dict, loaded_at: dt.datetime) -> list[dict[str,
     return [build_row(base_id, resource.get("code", {}), resource)]
 
 
+# A single multi-row INSERT binds len(chunk) * len(columns) parameters. Postgres/asyncpg
+# reject statements above 32767 bound parameters, and a patient with a long medical history
+# can easily produce several thousand observation rows -- so upserts are chunked.
+UPSERT_CHUNK_SIZE = 500
+
+
 async def upsert_rows(session: AsyncSession, model, rows: list[dict[str, Any]], pk: str) -> int:
     if not rows:
         return 0
-    stmt = pg_insert(model).values(rows)
-    update_cols = {c: getattr(stmt.excluded, c) for c in rows[0] if c != pk}
-    stmt = stmt.on_conflict_do_update(index_elements=[pk], set_=update_cols)
-    await session.execute(stmt)
+    for start in range(0, len(rows), UPSERT_CHUNK_SIZE):
+        chunk = rows[start : start + UPSERT_CHUNK_SIZE]
+        stmt = pg_insert(model).values(chunk)
+        update_cols = {c: getattr(stmt.excluded, c) for c in chunk[0] if c != pk}
+        stmt = stmt.on_conflict_do_update(index_elements=[pk], set_=update_cols)
+        await session.execute(stmt)
     return len(rows)
 
 
