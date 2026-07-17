@@ -141,15 +141,14 @@ Expectations data-quality suite, and builds every Docker image on each push.
 
 ## Dashboards
 
-<!-- Screenshots: run `docker compose up` + populate the OMOP CDM (see "Running the ETL"),
-     then visit http://localhost:8501 and capture each page. -->
+Screenshots below are real captures of the Streamlit app running against a 63-patient
+Synthea population loaded through the full ETL pipeline into the OMOP CDM -- not mockups.
 
 | Population Health | A&E Forecasting | Health Equity |
 |---|---|---|
-| ![Population Health dashboard placeholder](docs/img/population_health_placeholder.png) | ![A&E Forecasting dashboard placeholder](docs/img/ae_forecasting_placeholder.png) | ![Health Equity dashboard placeholder](docs/img/health_equity_placeholder.png) |
+| ![Population Health dashboard: age/sex pyramid and disease incidence](docs/img/population_health.png) | ![A&E Forecasting dashboard: Prophet forecast vs. synthetic attendance history](docs/img/ae_forecasting.png) | ![Health Equity dashboard: synthetic deprivation-index choropleth](docs/img/health_equity.png) |
 
-A real, generated example of the ETL's data-characterization output (not a placeholder) is
-committed at
+A real, generated example of the ETL's data-characterization output is committed at
 [`services/etl/great_expectations/achilles_report.html`](services/etl/great_expectations/achilles_report.html)
 -- open it directly in a browser.
 
