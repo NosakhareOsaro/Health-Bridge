@@ -16,9 +16,23 @@ Install the following before starting:
 | Tool | Version | Purpose |
 |------|---------|---------|
 | Docker & Docker Compose | recent | runs Postgres, HAPI FHIR, Redis, and the services |
-| Python | 3.12+ | FHIR gateway, ETL scripts, analytics app |
+| Python | 3.12.x | FHIR gateway, ETL scripts, analytics app |
 | Java (JRE/JDK) | 17+ | required to run the Synthea generator |
 | Git | any recent | version control |
+
+> **The `etl` service needs Python 3.12 specifically, not just "3.12 or newer."**
+> `dbt-core` (via its `mashumaro` dependency) crashes at import time on Python 3.14 with
+> `mashumaro.exceptions.UnserializableField: Field "schema" of type Optional[str] in
+> JSONObjectSchema is not serializable` -- this is a real, reproduced incompatibility, not a
+> hypothetical one, and it's independent of any pin in `requirements.txt` (dbt-core hasn't
+> shipped Python 3.14 support yet). The `fhir-api` and `analytics` services have no such
+> restriction. If your system's default `python3` is newer than 3.12, install 3.12
+> specifically for the `etl` venv, e.g. with [`uv`](https://docs.astral.sh/uv/):
+> ```bash
+> uv python install 3.12
+> uv venv --python 3.12 --seed .venv   # inside services/etl, instead of `python3 -m venv .venv`
+> ```
+> CI (`.github/workflows/ci.yml`) pins Python 3.12 for exactly this reason.
 
 On macOS, Java can be installed without admin rights via Homebrew:
 
@@ -91,7 +105,7 @@ services:
 
 ```bash
 cd services/etl
-python3 -m venv .venv
+python3.12 -m venv .venv   # must be 3.12 -- see the Python 3.14 note in section 1
 source .venv/bin/activate
 pip install -r requirements-dev.txt
 ```

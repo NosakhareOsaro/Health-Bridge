@@ -25,8 +25,13 @@ Synthea (Java)  --FHIR R4 bundles-->  scripts/load_fhir_to_staging.py  --async S
 
 ## Running the full pipeline locally
 
+Requires Python 3.12 specifically -- `dbt-core` crashes at import time on Python 3.14 (a
+real, reproduced `mashumaro` incompatibility, independent of anything pinned in
+`requirements.txt`; dbt-core hasn't shipped 3.14 support yet). If your system's default
+`python3` is newer, use `python3.12` or `uv venv --python 3.12 --seed .venv` instead.
+
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+python3.12 -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
 
 # 1. Generate synthetic patients (requires a Java 17+ runtime on PATH)
