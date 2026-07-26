@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "HealthBridge: FHIR R4 + OMOP CDM Clinical Data Platform"
+authors:
+  - family-names: "Osaro"
+    given-names: "Nosakhare"
+version: 1.0.0
+date-released: 2026-07-26
+url: "https://github.com/NosakhareOsaro/Health-Bridge"
+license: MIT
