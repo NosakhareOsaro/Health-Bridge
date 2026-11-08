@@ -3,13 +3,19 @@
   "description": "A full-stack clinical data platform combining a SMART-on-FHIR-secured HL7 FHIR R4 API, a Synthea-to-OMOP-CDM-v5.4 ETL pipeline, and population health / A&E demand forecasting dashboards. Built entirely on synthetic patient data.",
   "creators": [
     {
-      "name": "Osaro, Nosakhare",
-      "affiliation": ""
+      "name": "Osaro, Nosakhare Odionfo",
+      "affiliation": "",
+      "orcid": "0009-0004-9778-1161"
     }
   ],
   "keywords": [
-    "FHIR", "OMOP CDM", "health informatics", "bioinformatics",
-    "clinical data engineering", "HL7", "OHDSI"
+    "FHIR",
+    "OMOP CDM",
+    "health informatics",
+    "bioinformatics",
+    "clinical data engineering",
+    "HL7",
+    "OHDSI"
   ],
   "license": "MIT",
   "upload_type": "software"
