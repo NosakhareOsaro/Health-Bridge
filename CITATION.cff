@@ -10,3 +10,6 @@ version: 1.0.0
 date-released: 2026-07-26
 url: "https://github.com/NosakhareOsaro/Health-Bridge"
 license: MIT
+# Zenodo version DOI for v1.0.0, verified through the Zenodo API on 3 Nov 2026
+# and cited by this form on the academic CV. It was missing from this file.
+doi: "10.5281/zenodo.21612943"
